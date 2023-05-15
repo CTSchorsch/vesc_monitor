@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -17,10 +18,7 @@ volatile backup_data backup;
 
 //Private variable
 
-
-void app_main() {
-	uint8_t command[1] = { COMM_GET_VALUES };
-
+void setup() {
     confparser_set_defaults_main_config_t((main_config_t*)(&backup.config));
     
     commands_init();
@@ -29,6 +27,11 @@ void app_main() {
     vTaskDelay(1);
 
     comm_ble_init();
+}
+
+void loop() {
+	uint8_t command[1] = { COMM_GET_VALUES };
+
 
     while(1) {
         vTaskDelay(100);
