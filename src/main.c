@@ -8,6 +8,7 @@
 #include "comm_ble.h"
 #include "config/confparser.h"
 
+
 #include "stdio.h"
 #include <string.h>
 
@@ -28,7 +29,7 @@ void app_main() {
     vTaskDelay(1);
 
     comm_ble_init();
-    
+
     while(1) {
         vTaskDelay(100);
         //comm_uart_send_packet(command, 1);
