@@ -1,6 +1,10 @@
 #ifndef __CONF_DEFAULT_H__
 #define __CONF_DEFAULT_H__
 
+#ifndef CONF_BUTTON_MENU_PIN
+#define CONF_BUTTON_MENU_PIN    0
+#endif
+
 //UART to VESC
 #ifndef CONF_VESC_BAUD_RATE
 #define CONF_VESC_BAUD_RATE 115200
@@ -11,11 +15,11 @@
 #endif
 
 #ifndef CONF_VESC_UART_RX_PIN
-#define CONF_VESC_UART_RX_PIN 45
+#define CONF_VESC_UART_RX_PIN 5
 #endif
 
 #ifndef CONF_VESC_UART_TX_PIN
-#define CONF_VESC_UART_TX_PIN 42
+#define CONF_VESC_UART_TX_PIN 6
 #endif
 
 // Bluetooth 
