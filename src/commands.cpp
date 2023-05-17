@@ -26,6 +26,7 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
+#include "main.h"
 #include "commands.h"
 #include "datatypes.h"
 #include "packet.h"
@@ -70,7 +71,7 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 	//local 
 	COMM_PACKET_ID packet_id;
 
-	packet_id = data[0];
+	packet_id = (COMM_PACKET_ID) data[0];
 	data++;
 	len--;
 
@@ -81,13 +82,31 @@ void commands_process_packet(unsigned char *data, unsigned int len,
 		reply_func = send_func_dummy;
 	}
 
-
+	int32_t ind = 0;	
 	switch (packet_id) {
 		case COMM_GET_VALUES:
-			printf("GET Values\n");
+                vescData.tempMosfet = buffer_get_float16(data, 10.0, &ind);
+                vescData.tempMotor = buffer_get_float16(data, 10.0, &ind);
+                vescData.avgMotorCurrent = buffer_get_float32(data, 100.0, &ind);
+                vescData.avgInputCurrent = buffer_get_float32(data, 100.0, &ind);
+                ind += 8; // Skip the next 8 bytes
+                vescData.dutyCycleNow = buffer_get_float16(data, 1000.0, &ind);
+                vescData.rpm = buffer_get_int32(data, &ind);
+                vescData.inpVoltage = buffer_get_float16(data, 10.0, &ind);
+                vescData.ampHours = buffer_get_float32(data, 10000.0, &ind);
+                vescData.ampHoursCharged = buffer_get_float32(data, 10000.0, &ind);
+                ind += 8; // Skip the next 8 bytes
+                vescData.tachometer = buffer_get_int32(data, &ind);
+                vescData.tachometerAbs = buffer_get_int32(data, &ind);
+                vescData.error = data[ind++];
+                ind += 4;
+                vescData.id = data[ind++];
+                vescData.tempLED = buffer_get_float16(data, 10.0, &ind);
+                vescData.tempMisc1 = buffer_get_float16(data, 10.0, &ind);
 			break;
 
 		default:
+			printf("PACKET ID %d\n",packet_id);
 			break;
 	}
 }
@@ -98,32 +117,4 @@ void commands_send_packet(unsigned char *data, unsigned int len) {
 	}
 }
 
-int commands_printf(const char* format, ...) {
-	if (!init_done) {
-		return 0;
-	}
-
-	xSemaphoreTake(print_mutex, portMAX_DELAY);
-
-	va_list arg;
-	va_start (arg, format);
-	int len;
-
-	char *print_buffer = malloc(PRINT_BUFFER_SIZE);
-
-	print_buffer[0] = COMM_PRINT;
-	len = vsnprintf(print_buffer + 1, (PRINT_BUFFER_SIZE - 1), format, arg);
-	va_end (arg);
-
-	int len_to_print = (len < (PRINT_BUFFER_SIZE - 1)) ? len + 1 : PRINT_BUFFER_SIZE;
-
-	if(len > 0) {
-		commands_send_packet((unsigned char*)print_buffer, len_to_print);
-	}
-
-	free(print_buffer);
-	xSemaphoreGive(print_mutex);
-
-	return len_to_print - 1;
-}
 

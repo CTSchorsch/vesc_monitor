@@ -28,6 +28,5 @@ void commands_init(void);
 void commands_process_packet(unsigned char *data, unsigned int len,
 		void(*reply_func)(unsigned char *data, unsigned int len));
 void commands_send_packet(unsigned char *data, unsigned int len);
-int commands_printf(const char* format, ...);
 
 #endif /* MAIN_COMMANDS_H_ */

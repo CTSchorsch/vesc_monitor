@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
@@ -15,7 +14,7 @@
 
 //Global variables
 volatile backup_data backup;
-
+volatile vesc_values vescData;
 //Private variable
 
 void setup() {
@@ -23,7 +22,6 @@ void setup() {
     
     commands_init();
     comm_uart_init(); 
-    
     vTaskDelay(1);
 
     comm_ble_init();
@@ -34,8 +32,9 @@ void loop() {
 
 
     while(1) {
-        vTaskDelay(100);
-        //comm_uart_send_packet(command, 1);
+        vTaskDelay(1000);
+        comm_uart_send_packet(command, 1);
+        printf("Akkuspannung: %0.2f\n",vescData.inpVoltage);
     }
     
 }

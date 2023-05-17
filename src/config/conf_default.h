@@ -10,9 +10,17 @@
 #define CONF_VESC_UART_NUM 1
 #endif
 
+#ifndef CONF_VESC_UART_RX_PIN
+#define CONF_VESC_UART_RX_PIN 45
+#endif
+
+#ifndef CONF_VESC_UART_TX_PIN
+#define CONF_VESC_UART_TX_PIN 42
+#endif
+
 // Bluetooth 
 #ifndef CONF_BLE_MODE
-#define CONF_BLE_MODE 0
+#define CONF_BLE_MODE BLE_MODE_OPEN
 #endif
 
 #ifndef CONF_BLE_NAME

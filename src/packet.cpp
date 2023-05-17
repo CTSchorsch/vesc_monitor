@@ -42,6 +42,8 @@ void packet_reset(PACKET_STATE_t *state) {
 }
 
 void packet_send_packet(unsigned char *data, unsigned int len, PACKET_STATE_t *state) {
+
+	
 	if (len == 0 || len > PACKET_MAX_PL_LEN) {
 		return;
 	}
@@ -69,7 +71,6 @@ void packet_send_packet(unsigned char *data, unsigned int len, PACKET_STATE_t *s
 	state->tx_buffer[b_ind++] = (uint8_t)(crc >> 8);
 	state->tx_buffer[b_ind++] = (uint8_t)(crc & 0xFF);
 	state->tx_buffer[b_ind++] = 3;
-
 	if (state->send_func) {
 		state->send_func(state->tx_buffer, b_ind);
 	}

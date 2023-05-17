@@ -172,42 +172,46 @@ static void descr2_write_handler(esp_gatts_cb_event_t event, esp_gatt_if_t gatts
 
 static gatts_characteristic_instance_t ble_chars[BLE_CHAR_COUNT] = {
 {
-	.char_uuid.len = ESP_UUID_LEN_128,  // RX
-	.char_uuid.uuid.uuid128 =  { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x02, 0x00, 0x40, 0x6E },
+	.char_handle = 0,
+	.char_uuid = {	.len = ESP_UUID_LEN_128,  // RX
+				   	.uuid = { .uuid128 =  { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x02, 0x00, 0x40, 0x6E }}
+				 },
 	.char_perm = (ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE),
 	.char_property = ESP_GATT_CHAR_PROP_BIT_WRITE | ESP_GATT_CHAR_PROP_BIT_WRITE_NR,
 	.char_val = &gatts_char1_val,
 	.char_control = NULL,
-	.char_handle = 0,
 	.char_read_callback = char1_read_handler,
 	.char_write_callback = char1_write_handler,
 
-	.desc_uuid.len = ESP_UUID_LEN_16,
-	.desc_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG,
+	.desc_handle = 0,
+	.desc_uuid = { 	.len = ESP_UUID_LEN_16,
+					.uuid = { .uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG }
+				 },
 	.desc_perm = (ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE),
 	.desc_val = NULL,
 	.desc_control = NULL,
-	.desc_handle = 0,
 	.desc_read_callback = descr1_read_handler,
 	.desc_write_callback = descr1_write_handler,
 },
 {
-	.char_uuid.len = ESP_UUID_LEN_128, // TX
-	.char_uuid.uuid.uuid128 =  { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x03, 0x00, 0x40, 0x6E },
+	.char_handle = 0,
+	.char_uuid = {	.len = ESP_UUID_LEN_128,  // RX
+				   	.uuid = { .uuid128 =  { 0x9E, 0xCA, 0xDC, 0x24, 0x0E, 0xE5, 0xA9, 0xE0, 0x93, 0xF3, 0xA3, 0xB5, 0x03, 0x00, 0x40, 0x6E }}
+				 },
 	.char_perm = (ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE),
 	.char_property = ESP_GATT_CHAR_PROP_BIT_READ | ESP_GATT_CHAR_PROP_BIT_NOTIFY,
 	.char_val = &gatts_char2_val,
 	.char_control = NULL,
-	.char_handle = 0,
 	.char_read_callback = char2_read_handler,
 	.char_write_callback = char2_write_handler,
 
-	.desc_uuid.len = ESP_UUID_LEN_16,
-	.desc_uuid.uuid.uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG,
+	.desc_handle = 0,
+	.desc_uuid = { 	.len = ESP_UUID_LEN_16,
+					.uuid = { .uuid16 = ESP_GATT_UUID_CHAR_CLIENT_CONFIG }
+				 },
 	.desc_perm = (ESP_GATT_PERM_READ | ESP_GATT_PERM_WRITE),
 	.desc_val = NULL,
 	.desc_control = NULL,
-	.desc_handle = 0,
 	.desc_read_callback = descr2_read_handler,
 	.desc_write_callback = descr2_write_handler,
 }
@@ -339,6 +343,7 @@ static void gatts_check_callback(esp_gatts_cb_event_t event, esp_gatt_if_t gatts
 }
 
 static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param) {
+
 	switch (event) {
 	case ESP_GAP_BLE_ADV_DATA_SET_COMPLETE_EVT:
 		adv_config_done &= (~ADV_CFG_FLAG);
@@ -556,7 +561,8 @@ static void send_packet_raw(unsigned char *buffer, unsigned int len) {
 }
 
 void comm_ble_init(void) {
-	packet_state = calloc(1, sizeof(PACKET_STATE_t));
+
+	packet_state = (PACKET_STATE_t *)calloc(1, sizeof(PACKET_STATE_t));
 	packet_init(send_packet_raw, process_packet, packet_state);
 
 	if (backup.config.ble_mode == BLE_MODE_ENCRYPTED) {
